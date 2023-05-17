@@ -14,7 +14,8 @@ const port = process.env.PORT || 2410;
 app.listen(port, () => console.log(`Node app listening on port ${port}!`));
 app.use(cors());
 
-let data=[];
+let axios=require('axios');
+// app.use(axios)
 
 function isValidJSON(jsonString){
     try {
@@ -25,24 +26,28 @@ function isValidJSON(jsonString){
     }
   }
 
-app.post('/dataPost',(req, res)=>{
-    let data1=req.body;
-    if(isValidJSON(data1.data)){
-        let data3=JSON.parse( data1.data);
-        data3={...data3, time:Date.now()};
-        console.log(data3);
-        let data2=[]
-        data2.push(data3)
-        data.push(data3);
-        res.send(data2);
+
+app.post('/fetchData', async(req, res)=>{
+  let body=req.body;
+  console.log(req.body)
+  let {method, fetchURL, data}=body;
+  // res.send('correct')
+  if(method=="POST"){
+    if(isValidJSON(data)){
+      let data1=JSON.parse(data);
+      let response=await axios.post(fetchURL, data1);
+    console.log("hii1")
+    res.send(response.data);
     }
     else{
-        console.log('12')
-        res.status(401).send('Enter the Valid JSON Format');
+      console.log('12')
+      res.status(401).send('Enter the Valid JSON Format');
     }
-})
-
-app.get('/dataGet', (req, res)=>{
-    console.log(data);
-    res.send(data);
+    
+  }
+  else if(method=='GET'){
+    let response=await axios.get(fetchURL);
+    console.log("hii2");
+    res.send(response.data);
+  }
 })
