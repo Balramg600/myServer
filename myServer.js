@@ -35,19 +35,30 @@ app.post('/fetchData', async(req, res)=>{
   if(method=="POST"){
     if(isValidJSON(data)){
       let data1=JSON.parse(data);
-      let response=await axios.post(fetchURL, data1);
-    console.log("hii1")
-    res.send(response.data);
+      try{
+        let response=await axios.post(fetchURL, data1);
+        console.log("hii1")
+        res.send(response.data);
+      }
+      catch(err){
+        res.send('Not Found');
+      }
+     
     }
     else{
       console.log('12')
       res.status(401).send('Enter the Valid JSON Format');
     }
-    
   }
+
   else if(method=='GET'){
-    let response=await axios.get(fetchURL);
-    console.log("hii2");
-    res.send(response.data);
+    try{
+      let response=await axios.get(fetchURL);
+      console.log("hii2");
+      res.send(response.data);
+    }
+    catch(err){
+      res.send("Not Found");
+    }
   }
 })
